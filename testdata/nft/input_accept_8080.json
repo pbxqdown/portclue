@@ -1,0 +1,13 @@
+{
+  "nftables": [
+    {"metainfo": {"json_schema_version": 1}},
+    {"table": {"family": "inet", "name": "filter"}},
+    {"chain": {"family": "inet", "table": "filter", "name": "input", "type": "filter", "hook": "input", "prio": 0, "policy": "drop"}},
+    {"rule": {"family": "inet", "table": "filter", "chain": "input", "expr": [
+      {"match": {"op": "==", "left": {"meta": {"key": "l4proto"}}, "right": "tcp"}},
+      {"match": {"op": "==", "left": {"payload": {"protocol": "tcp", "field": "dport"}}, "right": 8080}},
+      {"counter": {"packets": 0, "bytes": 0}},
+      {"accept": null}
+    ]}}
+  ]
+}
