@@ -1,5 +1,10 @@
 # PortClue
 
+[![CI](https://github.com/pbxqdown/portclue/actions/workflows/ci.yml/badge.svg)](https://github.com/pbxqdown/portclue/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/pbxqdown/portclue)](https://github.com/pbxqdown/portclue/releases/latest)
+[![License](https://img.shields.io/github/license/pbxqdown/portclue)](LICENSE)
+[![Go](https://img.shields.io/github/go-mod/go-version/pbxqdown/portclue)](go.mod)
+
 PortClue explains **why a TCP port on a Linux machine may or may not be reachable**.
 It turns socket, process, firewall, and Docker state into a short evidence chain instead
 of making you correlate `ss`, `/proc`, nftables, iptables, and `docker inspect` by hand.
