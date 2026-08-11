@@ -16,6 +16,10 @@ func TestArgumentExitCodes(t *testing.T) {
 		{name: "overflow port", arguments: []string{"65536"}, want: 2},
 		{name: "non-numeric port", arguments: []string{"abc"}, want: 2},
 		{name: "too many ports", arguments: []string{"22", "23"}, want: 2},
+		{name: "bad bind-scope", arguments: []string{"--bind-scope", "PUBLIC"}, want: 2},
+		{name: "bad source", arguments: []string{"--source", "podman"}, want: 2},
+		{name: "bad min-confidence", arguments: []string{"--min-confidence", "LIKELY"}, want: 2},
+		{name: "filter with port", arguments: []string{"--bind-scope", "ALL_INTERFACES", "8080"}, want: 2},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 	"github.com/pbxqdown/portclue/internal/render"
 )
 
-func runOverview(jsonOutput bool, dockerSocket string) int {
+func runOverview(jsonOutput bool, dockerSocket string, filter analyze.OverviewFilter) int {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -29,11 +29,11 @@ func runOverview(jsonOutput bool, dockerSocket string) int {
 	if err != nil {
 		warnings = append(warnings, "Docker evidence unavailable: "+err.Error())
 	}
-	report := analyze.Overview(model.Facts{
+	report := analyze.FilterOverview(analyze.Overview(model.Facts{
 		Listeners: listeners,
 		Mappings:  mappings,
 		Warnings:  warnings,
-	})
+	}), filter)
 	if jsonOutput {
 		err = render.OverviewJSON(os.Stdout, report)
 	} else {

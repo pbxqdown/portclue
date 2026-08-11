@@ -26,10 +26,14 @@ func run(arguments []string) int {
 	flags.SetOutput(os.Stderr)
 	jsonOutput := flags.Bool("json", false, "emit the versioned JSON report")
 	dockerSocket := flags.String("docker-socket", "/var/run/docker.sock", "Docker Engine Unix socket")
+	bindScope := flags.String("bind-scope", "", "overview only: comma-separated ALL_INTERFACES,SPECIFIC_INTERFACE,LOOPBACK_ONLY")
+	source := flags.String("source", "", "overview only: comma-separated host,docker")
+	minConfidence := flags.String("min-confidence", "", "overview only: HIGH, MEDIUM, LOW, or UNKNOWN")
 	showVersion := flags.Bool("version", false, "print version and exit")
 	flags.Usage = func() {
-		fmt.Fprintln(flags.Output(), "Usage: portclue [--json] [PORT]")
+		fmt.Fprintln(flags.Output(), "Usage: portclue [--json] [--bind-scope SCOPE] [--source SOURCE] [--min-confidence LEVEL] [PORT]")
 		fmt.Fprintln(flags.Output(), "List local TCP exposure, or explain one port in detail.")
+		fmt.Fprintln(flags.Output(), "Overview filters apply only when PORT is omitted.")
 		flags.PrintDefaults()
 	}
 	if err := flags.Parse(arguments); err != nil {
@@ -42,12 +46,21 @@ func run(arguments []string) int {
 		fmt.Fprintln(os.Stdout, version)
 		return 0
 	}
+	filter, err := analyze.ParseOverviewFilter(*bindScope, *source, *minConfidence)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "portclue:", err)
+		return 2
+	}
 	if flags.NArg() > 1 {
 		flags.Usage()
 		return 2
 	}
 	if flags.NArg() == 0 {
-		return runOverview(*jsonOutput, *dockerSocket)
+		return runOverview(*jsonOutput, *dockerSocket, filter)
+	}
+	if filter.Active() {
+		fmt.Fprintln(os.Stderr, "portclue: --bind-scope, --source, and --min-confidence apply only to overview mode")
+		return 2
 	}
 	parsed, err := strconv.ParseUint(flags.Arg(0), 10, 16)
 	if err != nil || parsed == 0 {

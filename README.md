@@ -112,6 +112,20 @@ go build -o portclue ./cmd/portclue
 ./portclue --json 8080
 ```
 
+Overview mode accepts optional filters (ignored fields stay unconstrained):
+
+```bash
+./portclue --bind-scope ALL_INTERFACES,SPECIFIC_INTERFACE
+./portclue --source docker
+./portclue --min-confidence MEDIUM
+./portclue --json --bind-scope ALL_INTERFACES --min-confidence HIGH
+```
+
+`--bind-scope` accepts a comma-separated list of `ALL_INTERFACES`,
+`SPECIFIC_INTERFACE`, and `LOOPBACK_ONLY`. `--source` accepts `host` and/or
+`docker`. `--min-confidence` keeps entries at or above `HIGH`, `MEDIUM`, `LOW`,
+or `UNKNOWN`. These flags apply only when `PORT` is omitted.
+
 Running without root still gives useful listener, Docker mapping, and bind-address
 evidence. Process identity and firewall evidence may be incomplete when `/proc` or
 firewall state is restricted; PortClue reports this under `Incomplete evidence`.
@@ -119,6 +133,7 @@ Use `sudo` for the most complete result:
 
 ```bash
 sudo ./portclue
+sudo ./portclue --bind-scope ALL_INTERFACES,SPECIFIC_INTERFACE
 sudo ./portclue 8080
 ```
 
@@ -152,6 +167,7 @@ requires a new `schema_version`. Both contracts have regression tests.
 - Docker bridge published-port attribution
 - systemd socket-activated TCP service attribution
 - terminal and JSON output
+- overview filters: `--bind-scope`, `--source`, `--min-confidence`
 
 Not included: UDP, Podman, Kubernetes, cloud security groups, router discovery,
 remote scanning, eBPF, continuous monitoring, or remediation.
