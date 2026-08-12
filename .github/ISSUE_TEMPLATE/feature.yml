@@ -1,0 +1,38 @@
+name: Feature request
+description: Propose a capability that fits PortClue's local evidence-chain model
+title: "feature: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Prefer concrete scenarios over broad rewrites. PortClue stays read-only and
+        conservative about unsupported firewall logic.
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario
+      description: What are you trying to understand on a Linux host, and why is the current output insufficient?
+      placeholder: I need to list only non-loopback listeners before a deploy, and...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Ideal CLI/JSON shape if you have one; rough is fine
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What this request is explicitly not asking for
+      placeholder: Not asking for remote scanning, cloud security-group discovery, or auto-remediation
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing flags, JSON + jq/awk, other tools, etc.

@@ -1,0 +1,63 @@
+name: Bug report
+description: Incorrect verdict, identity, crash, or incomplete evidence that looks wrong
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve PortClue. For security-sensitive bugs, use
+        [private vulnerability reporting](https://github.com/pbxqdown/portclue/security/advisories/new).
+  - type: input
+    id: version
+    attributes:
+      label: PortClue version
+      description: Output of `portclue --version`
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS / arch
+      description: For example Ubuntu 24.04 x86_64, or `uname -a`
+      placeholder: Linux x86_64
+    validations:
+      required: true
+  - type: dropdown
+    id: root
+    attributes:
+      label: Ran with root?
+      options:
+        - "yes (sudo/root)"
+        - "no"
+        - mixed / unsure
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      description: Exact command(s) you ran
+      placeholder: sudo portclue 8080
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      placeholder: Verdict NOT_EXPOSED_LOCALLY because nftables drops the port
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: Paste relevant terminal or JSON output; redact secrets
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra context
+      description: Firewall backend, Docker involvement, systemd socket activation, warnings shown, etc.

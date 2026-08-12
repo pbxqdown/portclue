@@ -205,3 +205,6 @@ prototype earns real usage.
 
 PortClue is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
 Binary archives also include [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES).
+
+See [CHANGELOG.md](CHANGELOG.md) for release history and JSON compatibility notes,
+and [SECURITY.md](SECURITY.md) for supported versions and private vulnerability reporting.
