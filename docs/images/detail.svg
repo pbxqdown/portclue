@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-label="portclue evidence chain for TCP port 8080">
+  <title>portclue evidence chain</title>
+  <defs>
+    <style>
+      .frame { fill: #1e1e1e; }
+      .chrome { fill: #2d2d2d; }
+      .dot-r { fill: #ff5f56; }
+      .dot-y { fill: #ffbd2e; }
+      .dot-g { fill: #27c93f; }
+      .title { fill: #9a9a9a; font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .prompt { fill: #7dcfb6; font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .cmd { fill: #f0f0f0; font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .out { fill: #d6d6d6; font: 12.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .verdict { fill: #f0c674; font: 12.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .step { fill: #b5d38a; font: 12.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .dim { fill: #8a8a8a; font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    </style>
+  </defs>
+  <rect width="920" height="420" rx="10" class="frame"/>
+  <rect width="920" height="34" rx="10" class="chrome"/>
+  <rect y="20" width="920" height="14" class="chrome"/>
+  <circle cx="18" cy="17" r="5" class="dot-r"/>
+  <circle cx="36" cy="17" r="5" class="dot-y"/>
+  <circle cx="54" cy="17" r="5" class="dot-g"/>
+  <text x="460" y="21" text-anchor="middle" class="title">portclue  per-port evidence chain</text>
+
+  <text x="20" y="58"><tspan class="prompt">$</tspan><tspan class="cmd"> sudo portclue 8080</tspan></text>
+  <text x="20" y="84" class="verdict">POTENTIAL EXTERNAL EXPOSURE</text>
+  <text x="20" y="110" class="out">TCP port 8080</text>
+  <text x="20" y="136" class="out">  0.0.0.0:8080/tcp  [POTENTIAL]</text>
+  <text x="20" y="156" class="out">    Service            NGINX web server</text>
+  <text x="20" y="176" class="out">    Category           web</text>
+  <text x="20" y="196" class="out">    Confidence         HIGH</text>
+  <text x="20" y="216" class="out">    Identity evidence  executable basename matched "nginx"</text>
+  <text x="20" y="242" class="step">    -&gt; LISTEN             NETLINK_INET_DIAG reports socket inode 123456 bound to 0.0.0.0:8080/tcp</text>
+  <text x="20" y="262" class="step">    -&gt; OWNED              PID 4242 (nginx), systemd unit nginx.service</text>
+  <text x="20" y="282" class="step">    -&gt; ALL_INTERFACES     0.0.0.0 accepts traffic addressed to any local interface</text>
+  <text x="20" y="302" class="step">    -&gt; ACCEPT             nftables: a direct rule matches TCP destination port 8080 and returns accept</text>
+  <text x="20" y="334" class="dim">Unknown outside this machine:</text>
+  <text x="20" y="354" class="dim">  - router port forwarding</text>
+  <text x="20" y="374" class="dim">  - cloud firewall or security group</text>
+  <text x="20" y="394" class="dim">  - upstream NAT, including carrier-grade NAT</text>
+</svg>

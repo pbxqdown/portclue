@@ -9,6 +9,14 @@ PortClue explains **why a TCP port on a Linux machine may or may not be reachabl
 It turns socket, process, firewall, and Docker state into a short evidence chain instead
 of making you correlate `ss`, `/proc`, nftables, iptables, and `docker inspect` by hand.
 
+<p align="center">
+  <img src="docs/images/overview.svg" alt="portclue overview of local TCP listeners" width="920">
+</p>
+
+<p align="center">
+  <img src="docs/images/detail.svg" alt="portclue evidence chain for TCP port 8080" width="920">
+</p>
+
 Run it without a port to discover which local TCP endpoints deserve attention:
 
 ```console
@@ -17,9 +25,9 @@ LOCAL TCP LISTENERS
 
 PORT    SERVICE                   CONFIDENCE BIND            OWNER       SOURCE BIND SCOPE
 22      OpenSSH server            HIGH       0.0.0.0,::      ssh.service host   ALL_INTERFACES
-8080    NGINX web server           HIGH       0.0.0.0,::      nginx       host   ALL_INTERFACES
-8443    api service                MEDIUM     192.0.2.10      demo-api    docker SPECIFIC_INTERFACE
-9000    Python HTTP server         MEDIUM     127.0.0.1       python3     host   LOOPBACK_ONLY
+8080    NGINX web server          HIGH       0.0.0.0,::      nginx       host   ALL_INTERFACES
+8443    api service               MEDIUM     192.0.2.10      demo-api    docker SPECIFIC_INTERFACE
+9000    Python HTTP server        MEDIUM     127.0.0.1       python3     host   LOOPBACK_ONLY
 
 BIND SCOPE describes socket binding, not firewall reachability.
 Run `portclue PORT` for the complete evidence chain and local exposure verdict.
@@ -83,16 +91,18 @@ inside the single binary; PortClue does not download identity data at runtime.
 PortClue is read-only. It does not connect to the queried port, scan another host,
 change firewall rules, stop processes or containers, upload data, or run a daemon.
 
-## Install a release archive
+## Install
 
-Release archives are available for Linux amd64 and arm64. Download the matching
-`portclue-VERSION-linux-ARCH.tar.gz` and `SHA256SUMS` from
-[GitHub Releases](https://github.com/pbxqdown/portclue/releases), then verify and install:
+### Release archive (recommended)
+
+Download the matching `portclue-VERSION-linux-ARCH.tar.gz` and `SHA256SUMS` from
+[GitHub Releases](https://github.com/pbxqdown/portclue/releases), verify the
+checksum, then install:
 
 ```bash
 sha256sum -c SHA256SUMS --ignore-missing
-tar -xzf portclue-VERSION-linux-ARCH.tar.gz
-sudo install -m 0755 portclue-VERSION-linux-ARCH/portclue /usr/local/bin/portclue
+tar -xzf portclue-0.1.0-linux-amd64.tar.gz   # or linux-arm64
+sudo install -m 0755 portclue-0.1.0-linux-amd64/portclue /usr/local/bin/portclue
 portclue --version
 ```
 
@@ -104,6 +114,17 @@ Architecture mapping:
 | `aarch64`, `arm64` | `linux-arm64` |
 
 Each archive includes the binary, README, Apache-2.0 license, and third-party notices.
+
+### Go install
+
+Requires Linux and Go 1.24+:
+
+```bash
+go install github.com/pbxqdown/portclue/cmd/portclue@v0.1.0
+```
+
+This puts the binary in `$(go env GOPATH)/bin`. Prefer the checksum-verified
+release archive when you want reproducible install artifacts.
 
 ## Build and run from source
 
@@ -187,6 +208,9 @@ an unparsed rule as accept or drop.
 
 ## Development
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for scope, testing, and how to report
+firewall `UNKNOWN` results.
+
 ```bash
 make check
 make release VERSION=0.1.0
@@ -207,4 +231,5 @@ PortClue is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
 Binary archives also include [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES).
 
 See [CHANGELOG.md](CHANGELOG.md) for release history and JSON compatibility notes,
-and [SECURITY.md](SECURITY.md) for supported versions and private vulnerability reporting.
+[SECURITY.md](SECURITY.md) for supported versions and private vulnerability reporting,
+and [CONTRIBUTING.md](CONTRIBUTING.md) to contribute.
