@@ -7,6 +7,13 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 for tagged releases. Versioned JSON contracts also bump `schema_version` on
 incompatible field changes.
 
+## [Unreleased]
+
+### Fixed
+
+- `portclue --version` reports the module version when installed with
+  `go install ...@vX.Y.Z` instead of always printing `0.1.0-dev`
+
 ## [0.1.0] - 2026-08-11
 
 First public preview release.

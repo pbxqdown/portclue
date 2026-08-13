@@ -6,7 +6,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime/debug"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pbxqdown/portclue/internal/analyze"
@@ -19,6 +21,24 @@ var version = "0.1.0-dev"
 
 func main() {
 	os.Exit(run(os.Args[1:]))
+}
+
+func displayVersion() string {
+	moduleVersion := ""
+	if info, ok := debug.ReadBuildInfo(); ok {
+		moduleVersion = info.Main.Version
+	}
+	return resolveVersion(version, moduleVersion)
+}
+
+func resolveVersion(fallback, moduleVersion string) string {
+	if fallback != "" && fallback != "0.1.0-dev" {
+		return fallback
+	}
+	if moduleVersion != "" && moduleVersion != "(devel)" {
+		return strings.TrimPrefix(moduleVersion, "v")
+	}
+	return fallback
 }
 
 func run(arguments []string) int {
@@ -43,7 +63,7 @@ func run(arguments []string) int {
 		return 2
 	}
 	if *showVersion {
-		fmt.Fprintln(os.Stdout, version)
+		fmt.Fprintln(os.Stdout, displayVersion())
 		return 0
 	}
 	filter, err := analyze.ParseOverviewFilter(*bindScope, *source, *minConfidence)
