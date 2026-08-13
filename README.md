@@ -9,14 +9,6 @@ PortClue explains **why a TCP port on a Linux machine may or may not be reachabl
 It turns socket, process, firewall, and Docker state into a short evidence chain instead
 of making you correlate `ss`, `/proc`, nftables, iptables, and `docker inspect` by hand.
 
-<p align="center">
-  <img src="docs/images/overview.svg" alt="portclue overview of local TCP listeners" width="920">
-</p>
-
-<p align="center">
-  <img src="docs/images/detail.svg" alt="portclue evidence chain for TCP port 8080" width="920">
-</p>
-
 Run it without a port to discover which local TCP endpoints deserve attention:
 
 ```console
