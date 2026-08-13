@@ -2,6 +2,27 @@ package main
 
 import "testing"
 
+func TestResolveVersion(t *testing.T) {
+	tests := []struct {
+		name          string
+		fallback      string
+		moduleVersion string
+		want          string
+	}{
+		{name: "ldflags release", fallback: "0.1.0", moduleVersion: "v0.1.0", want: "0.1.0"},
+		{name: "go install module tag", fallback: "0.1.0-dev", moduleVersion: "v0.1.0", want: "0.1.0"},
+		{name: "local devel", fallback: "0.1.0-dev", moduleVersion: "(devel)", want: "0.1.0-dev"},
+		{name: "empty module", fallback: "0.1.0-dev", moduleVersion: "", want: "0.1.0-dev"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := resolveVersion(test.fallback, test.moduleVersion); got != test.want {
+				t.Fatalf("resolveVersion(%q, %q) = %q, want %q", test.fallback, test.moduleVersion, got, test.want)
+			}
+		})
+	}
+}
+
 func TestArgumentExitCodes(t *testing.T) {
 	tests := []struct {
 		name      string
