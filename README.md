@@ -89,23 +89,45 @@ change firewall rules, stop processes or containers, upload data, or run a daemo
 
 ### Install script (recommended)
 
-Linux amd64/arm64. Downloads the matching GitHub Release archive, verifies
-`SHA256SUMS`, and installs a single binary to `~/.local/bin` (does not modify
-shell config):
+Runs on Linux (amd64 and arm64). The script downloads the matching GitHub
+Release archive, verifies `SHA256SUMS`, and installs a single binary. It does
+not modify shell config.
+
+**User install (default, no root).** Installs to `~/.local/bin`, owned by you:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pbxqdown/portclue/v0.1.1/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/pbxqdown/portclue/v0.1.2/scripts/install.sh | sh
+portclue
 ```
 
-Optional: `PORTCLUE_VERSION=0.1.1` (no leading `v`) and
-`PORTCLUE_INSTALL_DIR=/usr/local/bin`.
+A user install runs without root and reports the evidence available to your
+account, noting what is missing. This is enough to explore listeners and Docker
+mappings. Because `sudo` does not search `~/.local/bin` and this binary is
+writable by your user, do not run this copy with `sudo`.
+
+**System install (root-owned, for `sudo portclue`).** PortClue reads the most
+complete evidence (restricted `/proc`, full firewall state) as root. For that,
+install a root-owned binary into `/usr/local/bin` (the script uses `sudo` only
+for the final install step, not for downloading or extracting):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/pbxqdown/portclue/v0.1.2/scripts/install.sh | sh -s -- --system
+sudo portclue
+```
+
+Optional overrides: `PORTCLUE_VERSION=0.1.2` (no leading `v`) and
+`PORTCLUE_INSTALL_DIR` for either mode.
 
 Uninstall:
 
 ```bash
+# user install
 rm ~/.local/bin/portclue
-# or:
-curl -fsSL https://raw.githubusercontent.com/pbxqdown/portclue/v0.1.1/scripts/install.sh | sh -s -- --uninstall
+# system install
+sudo rm /usr/local/bin/portclue
+# or, matching how you installed:
+curl -fsSL https://raw.githubusercontent.com/pbxqdown/portclue/v0.1.2/scripts/install.sh | sh -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/pbxqdown/portclue/v0.1.2/scripts/install.sh | sh -s -- --system --uninstall
 ```
 
 ### Release archive
@@ -116,8 +138,8 @@ checksum, then install:
 
 ```bash
 sha256sum -c SHA256SUMS --ignore-missing
-tar -xzf portclue-0.1.1-linux-amd64.tar.gz   # or linux-arm64
-sudo install -m 0755 portclue-0.1.1-linux-amd64/portclue /usr/local/bin/portclue
+tar -xzf portclue-0.1.2-linux-amd64.tar.gz   # or linux-arm64
+sudo install -m 0755 portclue-0.1.2-linux-amd64/portclue /usr/local/bin/portclue
 portclue --version
 ```
 
@@ -135,7 +157,7 @@ Each archive includes the binary, README, Apache-2.0 license, and third-party no
 Requires Linux and Go 1.24+:
 
 ```bash
-go install github.com/pbxqdown/portclue/cmd/portclue@v0.1.1
+go install github.com/pbxqdown/portclue/cmd/portclue@v0.1.2
 ```
 
 This puts the binary in `$(go env GOPATH)/bin`. Prefer the checksum-verified
@@ -228,7 +250,7 @@ firewall `UNKNOWN` results.
 
 ```bash
 make check
-make release VERSION=0.1.1
+make release VERSION=0.1.2
 ```
 
 `make release` requires a clean Git worktree and creates versioned amd64/arm64

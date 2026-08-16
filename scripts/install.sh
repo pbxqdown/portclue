@@ -2,31 +2,42 @@
 # Install PortClue from a GitHub Release archive after verifying SHA256SUMS.
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/pbxqdown/portclue/vX.Y.Z/scripts/install.sh | sh
+#   curl -fsSL .../scripts/install.sh | sh -s -- --system
 #   curl -fsSL .../scripts/install.sh | sh -s -- --uninstall
 # Env:
 #   PORTCLUE_VERSION     release version without leading v (default: latest)
-#   PORTCLUE_INSTALL_DIR install directory (default: ~/.local/bin)
+#   PORTCLUE_INSTALL_DIR install directory (default: ~/.local/bin, or
+#                        /usr/local/bin with --system)
 
 set -eu
 
 REPO="pbxqdown/portclue"
 BASE_URL="https://github.com/${REPO}/releases"
-DEFAULT_INSTALL_DIR="${HOME}/.local/bin"
-INSTALL_DIR="${PORTCLUE_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
+USER_INSTALL_DIR="${HOME}/.local/bin"
+SYSTEM_INSTALL_DIR="/usr/local/bin"
 VERSION="${PORTCLUE_VERSION:-}"
+MODE="user"
 
 usage() {
 	cat <<'EOF'
 Install PortClue from GitHub Releases (checksum-verified).
 
 Usage:
-  install.sh
-  install.sh --uninstall
+  install.sh              Install for the current user (~/.local/bin, no root)
+  install.sh --system     Install system-wide, root-owned (/usr/local/bin)
+  install.sh --uninstall  Remove a user install
+  install.sh --system --uninstall
+                          Remove a system install
   install.sh --help
 
 Environment:
   PORTCLUE_VERSION      Version without leading "v" (default: latest release)
-  PORTCLUE_INSTALL_DIR  Directory for the portclue binary (default: ~/.local/bin)
+  PORTCLUE_INSTALL_DIR  Override the install directory for either mode
+
+Modes:
+  User mode installs a binary you own and runs without root. PortClue reports
+  the most evidence as root, and sudo does not search ~/.local/bin, so use
+  system mode when you want to run "sudo portclue".
 EOF
 }
 
@@ -37,6 +48,31 @@ error() {
 
 need_cmd() {
 	command -v "$1" >/dev/null 2>&1 || error "required command not found: $1"
+}
+
+# Run a command with root privileges only when needed (system mode).
+privileged() {
+	if [ "$(id -u)" -eq 0 ]; then
+		"$@"
+	elif command -v sudo >/dev/null 2>&1; then
+		sudo "$@"
+	else
+		error "system install needs root; re-run as root or install sudo"
+	fi
+}
+
+install_dir() {
+	if [ -n "${PORTCLUE_INSTALL_DIR:-}" ]; then
+		printf '%s\n' "$PORTCLUE_INSTALL_DIR"
+	elif [ "$MODE" = "system" ]; then
+		printf '%s\n' "$SYSTEM_INSTALL_DIR"
+	else
+		printf '%s\n' "$USER_INSTALL_DIR"
+	fi
+}
+
+bin_path() {
+	printf '%s/portclue\n' "$(install_dir)"
 }
 
 detect_arch() {
@@ -69,28 +105,44 @@ download() {
 	curl -fsSL --proto '=https' --tlsv1.2 -o "$dest" "$src" || error "download failed: ${src}"
 }
 
-bin_path() {
-	printf '%s/portclue\n' "$INSTALL_DIR"
-}
-
 uninstall() {
 	target="$(bin_path)"
-	if [ -e "$target" ] || [ -L "$target" ]; then
-		rm -f "$target"
-		printf 'Removed %s\n' "$target"
-	else
+	if [ ! -e "$target" ] && [ ! -L "$target" ]; then
 		printf 'Nothing to remove at %s\n' "$target"
+		return
 	fi
+	if [ "$MODE" = "system" ]; then
+		privileged rm -f "$target"
+	else
+		rm -f "$target"
+	fi
+	printf 'Removed %s\n' "$target"
 }
 
 path_hint() {
+	dir="$(install_dir)"
 	case ":${PATH}:" in
-	*":${INSTALL_DIR}:"*) ;;
+	*":${dir}:"*) ;;
 	*)
-		printf '\n%s is not in PATH. Add it for the current shell:\n' "$INSTALL_DIR"
-		printf '  export PATH="%s:$PATH"\n' "$INSTALL_DIR"
+		printf '\n%s is not in PATH. Add it for the current shell:\n' "$dir"
+		printf '  export PATH="%s:$PATH"\n' "$dir"
 		;;
 	esac
+}
+
+post_install_hint() {
+	if [ "$MODE" = "system" ]; then
+		printf '\nRun with full evidence:\n  sudo portclue\n'
+		return
+	fi
+	path_hint
+	# In user mode the binary is user-writable and sudo does not search
+	# ~/.local/bin, so do not recommend running this copy as root.
+	printf '\nRun (non-root reports available evidence and notes what is missing):\n'
+	printf '  portclue\n'
+	printf '\nFor the most complete result as root, install system-wide instead:\n'
+	printf '  curl -fsSL https://raw.githubusercontent.com/%s/v%s/scripts/install.sh | sh -s -- --system\n' "$REPO" "$version"
+	printf '  sudo portclue\n'
 }
 
 install_portclue() {
@@ -134,16 +186,30 @@ install_portclue() {
 	extracted="${tmpdir}/portclue-${version}-linux-${arch}/portclue"
 	[ -f "$extracted" ] || error "archive did not contain portclue binary"
 
-	mkdir -p "$INSTALL_DIR"
-	install -m 0755 "$extracted" "$(bin_path)"
+	dir="$(install_dir)"
+	if [ "$MODE" = "system" ]; then
+		# Root-owned binary in a system directory: sudo resolves it and the
+		# executable is not writable by an unprivileged user.
+		privileged install -d -m 0755 "$dir"
+		privileged install -o 0 -g 0 -m 0755 "$extracted" "$(bin_path)"
+	else
+		mkdir -p "$dir"
+		install -m 0755 "$extracted" "$(bin_path)"
+	fi
 
 	printf 'Installed %s\n' "$(bin_path)"
 	if "$(bin_path)" --version >/dev/null 2>&1; then
 		printf 'Version: %s\n' "$("$(bin_path)" --version)"
 	fi
-	path_hint
-	printf '\nUninstall:\n  rm %s\n' "$(bin_path)"
-	printf '  # or: curl -fsSL https://raw.githubusercontent.com/%s/v%s/scripts/install.sh | sh -s -- --uninstall\n' "$REPO" "$version"
+	post_install_hint
+	printf '\nUninstall:\n'
+	if [ "$MODE" = "system" ]; then
+		printf '  sudo rm %s\n' "$(bin_path)"
+		printf '  # or: curl -fsSL https://raw.githubusercontent.com/%s/v%s/scripts/install.sh | sh -s -- --system --uninstall\n' "$REPO" "$version"
+	else
+		printf '  rm %s\n' "$(bin_path)"
+		printf '  # or: curl -fsSL https://raw.githubusercontent.com/%s/v%s/scripts/install.sh | sh -s -- --uninstall\n' "$REPO" "$version"
+	fi
 }
 
 main() {
@@ -153,6 +219,9 @@ main() {
 		-h | --help)
 			usage
 			exit 0
+			;;
+		--system)
+			MODE="system"
 			;;
 		--uninstall)
 			action="uninstall"

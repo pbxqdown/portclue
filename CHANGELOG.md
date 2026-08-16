@@ -9,6 +9,19 @@ incompatible field changes.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-16
+
+### Added
+
+- `scripts/install.sh --system` installs a root-owned binary to `/usr/local/bin`
+  (using `sudo` only for the final install step) so `sudo portclue` resolves
+
+### Changed
+
+- Default user install no longer suggests running the user-writable
+  `~/.local/bin` copy under `sudo`; the README separates a no-root user install
+  from a root-owned system install and explains the privilege trade-off
+
 ## [0.1.1] - 2026-08-16
 
 ### Added
@@ -59,5 +72,6 @@ First public preview release.
 - Removals, renames, or incompatible meaning changes require a new
   `schema_version`
 
+[0.1.2]: https://github.com/pbxqdown/portclue/releases/tag/v0.1.2
 [0.1.1]: https://github.com/pbxqdown/portclue/releases/tag/v0.1.1
 [0.1.0]: https://github.com/pbxqdown/portclue/releases/tag/v0.1.0
