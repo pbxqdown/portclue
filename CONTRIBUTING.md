@@ -22,8 +22,9 @@ In scope: clearer local evidence, safer firewall parsing, better identity, and
 documentation that reduces misuse of `POTENTIAL` / `UNKNOWN`.
 
 Out of scope unless discussed first: remote scanning, auto-remediation, cloud
-security-group discovery, curl-pipe installers, and broadening firewall coverage
-in ways that guess accept/drop for unrecognized expressions.
+security-group discovery, third-party installers outside `scripts/install.sh`,
+and broadening firewall coverage in ways that guess accept/drop for unrecognized
+expressions.
 
 ## Reporting firewall `UNKNOWN`
 
