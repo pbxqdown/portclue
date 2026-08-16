@@ -9,6 +9,13 @@ incompatible field changes.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-16
+
+### Added
+
+- Official `scripts/install.sh` for checksum-verified GitHub Release installs to
+  `~/.local/bin`, with `--uninstall`
+
 ### Fixed
 
 - `portclue --version` reports the module version when installed with
@@ -52,4 +59,5 @@ First public preview release.
 - Removals, renames, or incompatible meaning changes require a new
   `schema_version`
 
+[0.1.1]: https://github.com/pbxqdown/portclue/releases/tag/v0.1.1
 [0.1.0]: https://github.com/pbxqdown/portclue/releases/tag/v0.1.0

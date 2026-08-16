@@ -52,4 +52,7 @@ Complex firewall or privilege bugs may take longer; you will still get a status 
 ## Release artifacts
 
 Prefer GitHub Release archives and verify `SHA256SUMS` before installing.
+The official `scripts/install.sh` downloads those same archives and checks
+`SHA256SUMS` before writing the binary. Prefer a tag-pinned script URL from this
+repository over copies hosted elsewhere.
 Report compromised or mismatched checksums privately using the same channel.
