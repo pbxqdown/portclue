@@ -1,5 +1,5 @@
 module github.com/pbxqdown/portclue
 
-go 1.24
+go 1.25.0
 
-require golang.org/x/sys v0.33.0
+require golang.org/x/sys v0.47.0
