@@ -5,7 +5,7 @@ aligned with the tool's read-only, conservative posture.
 
 ## Develop
 
-Requirements: Linux and Go 1.24+.
+Requirements: Linux and Go 1.25+.
 
 ```bash
 make check    # gofmt, go mod verify, race tests, vet
