@@ -58,6 +58,20 @@ Unknown outside this machine:
 > observed local path allows traffic; it does **not** claim that a port is reachable
 > from the public internet. Unsupported firewall expressions produce `UNKNOWN`.
 
+## Why not `ss` or `lsof`
+
+- **It does not need them.** Listeners come from `NETLINK_INET_DIAG`, the same kernel
+  interface `ss` uses, and process details from `/proc`. Nothing is parsed out of
+  another tool's output, so a container with neither `ss` nor `lsof` still gets the
+  listener and its owner. Firewall analysis does run `nft` or `iptables-save`, and
+  reports `UNKNOWN` without them.
+- **It answers the next question.** `ss -ltnp` gives you the socket and the PID.
+  Whether that bind is loopback-only, whether a firewall rule allows it, and whether
+  the port is a Docker publish rather than a host listener is work you would otherwise
+  do by hand.
+- **It will not guess.** A firewall rule PortClue cannot model gives `UNKNOWN`, never a
+  confident wrong answer.
+
 ## What it reads
 
 - TCP listeners through `NETLINK_INET_DIAG`, not by scraping `ss` output
