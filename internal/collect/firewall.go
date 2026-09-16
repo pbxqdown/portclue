@@ -137,7 +137,12 @@ func evaluateNFTRule(expressions []json.RawMessage, port uint16) (bool, model.Fi
 			unknownCondition = true
 			continue
 		}
+		// Statements that record a packet without deciding its fate or
+		// diverting evaluation cannot change the answer to the query.
 		if _, ok := expression["counter"]; ok {
+			continue
+		}
+		if _, ok := expression["log"]; ok {
 			continue
 		}
 		if rawMatch, ok := expression["match"]; ok {
