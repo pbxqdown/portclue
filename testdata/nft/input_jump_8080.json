@@ -1,0 +1,17 @@
+{
+  "nftables": [
+    {"table": {"family": "inet", "name": "filter"}},
+    {"chain": {"family": "inet", "table": "filter", "name": "input", "type": "filter", "hook": "input", "prio": 0, "policy": "accept"}},
+    {"chain": {"family": "inet", "table": "filter", "name": "block-8080"}},
+    {"rule": {"family": "inet", "table": "filter", "chain": "input", "expr": [
+      {"match": {"op": "==", "left": {"meta": {"key": "l4proto"}}, "right": "tcp"}},
+      {"match": {"op": "==", "left": {"payload": {"protocol": "tcp", "field": "dport"}}, "right": 8080}},
+      {"jump": {"target": "block-8080"}}
+    ]}},
+    {"rule": {"family": "inet", "table": "filter", "chain": "block-8080", "expr": [
+      {"match": {"op": "==", "left": {"meta": {"key": "l4proto"}}, "right": "tcp"}},
+      {"match": {"op": "==", "left": {"payload": {"protocol": "tcp", "field": "dport"}}, "right": 8080}},
+      {"drop": null}
+    ]}}
+  ]
+}

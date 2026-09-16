@@ -30,6 +30,17 @@ func TestParseNFTUnsupportedExpressionIsUnknown(t *testing.T) {
 	}
 }
 
+func TestParseNFTJumpIsUnknown(t *testing.T) {
+	data := fixture(t, "../../testdata/nft/input_jump_8080.json")
+	observation, err := parseNFT(data, 8080, "input")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if observation.Verdict != model.FirewallUnknown {
+		t.Fatalf("verdict = %s, want %s", observation.Verdict, model.FirewallUnknown)
+	}
+}
+
 func TestParseIPTablesDrop(t *testing.T) {
 	data := string(fixture(t, "../../testdata/iptables/input_drop.txt"))
 	observation := parseIPTables(data, 8080, "INPUT")
