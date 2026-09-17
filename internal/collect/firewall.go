@@ -137,7 +137,12 @@ func evaluateNFTRule(expressions []json.RawMessage, port uint16) (bool, model.Fi
 			unknownCondition = true
 			continue
 		}
+		// Statements that record a packet without deciding its fate or
+		// diverting evaluation cannot change the answer to the query.
 		if _, ok := expression["counter"]; ok {
+			continue
+		}
+		if _, ok := expression["log"]; ok {
 			continue
 		}
 		if rawMatch, ok := expression["match"]; ok {
@@ -173,11 +178,11 @@ func evaluateNFTRule(expressions []json.RawMessage, port uint16) (bool, model.Fi
 		}
 		unknownCondition = true
 	}
-	if verdict == model.FirewallUnknown {
-		return false, verdict, "", true
-	}
 	if unknownCondition {
 		return true, model.FirewallUnknown, "a potentially matching nftables rule contains an unsupported expression", false
+	}
+	if verdict == model.FirewallUnknown {
+		return false, verdict, "", true
 	}
 	what := "all TCP traffic"
 	if portConstraint {
