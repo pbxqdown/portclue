@@ -168,7 +168,7 @@ Each archive includes the binary, README, Apache-2.0 license, and third-party no
 
 ### Go install
 
-Requires Linux and Go 1.25+:
+Requires Linux and Go 1.27+:
 
 ```bash
 go install github.com/pbxqdown/portclue/cmd/portclue@v0.1.2
@@ -179,7 +179,7 @@ release archive or install script when you want reproducible install artifacts.
 
 ## Build and run from source
 
-Requirements: Linux and Go 1.25 or newer.
+Requirements: Linux and Go 1.27 or newer.
 
 ```bash
 go build -o portclue ./cmd/portclue
